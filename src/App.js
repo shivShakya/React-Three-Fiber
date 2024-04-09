@@ -125,7 +125,7 @@ function App() {
   }, [modelRef.current]);
 
   return (
-    <Canvas dpr={[1, 2]} camera={{ fov: 75 }} style={{ position: 'absolute' }} onClick={() => controlsRef.current.lock()}>
+    <><Canvas dpr={[1, 2]} camera={{ fov: 75 }} style={{ position: 'absolute' }} onClick={() => controlsRef.current.lock()}>
       <PointerLockControls ref={controlsRef} />
       <color attach="background" args={['#0000FF']} />
       <Sky sunPosition={[100, 20, 100]} />
@@ -135,6 +135,8 @@ function App() {
       <ambientLight intensity={1.5} />
       <Controls controlsRef={controlsRef} moveState={moveState} />
     </Canvas>
+    <div style={{ zIndex : 10 , background: 'transparent' , position: 'fixed' , color : 'white' , padding : '20px'}}>Submitted By - Shivam Shakya <div style={{ textDecoration : 'underline'}}><br></br> W - move forward <br></br> A - move left <br></br>S - move backword <br></br> D - move right <br></br> Q - move up <br></br>E - move down <br></br></div></div>
+    </>
   );
 }
 

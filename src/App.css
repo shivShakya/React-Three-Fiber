@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+.text{
+  z-index : 10;
+  background: 'transparent';
+  position: 'fixed' ;
+  color : 'white' ;
+  padding : '20px' ;
+  text-decoration : 'underline';
+}
