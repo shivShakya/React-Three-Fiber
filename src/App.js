@@ -3,11 +3,13 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Stage, PointerLockControls, Sky } from '@react-three/drei';
 import './App.css';
 
+//GLB model load
 function Model(props) {
   const { scene } = useGLTF("/modern_home.glb");
   return <primitive object={scene} {...props} />;
 }
 
+//WASD controls
 function Controls({ controlsRef, moveState }) {
   useFrame(() => {
     const moveSpeed = 4;
@@ -37,9 +39,13 @@ function Controls({ controlsRef, moveState }) {
   return null;
 }
 
+
 function App() {
+  //references
   const controlsRef = useRef();
   const modelRef = useRef();
+
+  //wasd states
   const [moveState, setMoveState] = useState({
     forward: false,
     backward: false,
@@ -49,6 +55,7 @@ function App() {
     down: false
   });
 
+  // wasd func keydown
   const handleKeyDown = (event) => {
     switch (event.key) {
       case 'w':
@@ -73,7 +80,7 @@ function App() {
         break;
     }
   };
-
+ // wasd func keyup
   const handleKeyUp = (event) => {
     switch (event.key) {
       case 'w':
