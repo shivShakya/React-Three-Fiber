@@ -1,0 +1,9 @@
+.reset {
+    z-index: 10;
+    background: transparent;
+    position: fixed;
+    color: white;
+    padding: 20px;
+  }
+  
+  
