@@ -1,39 +1,43 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame , useLoader } from '@react-three/fiber';
 import { useGLTF, Stage, PointerLockControls, Sky } from '@react-three/drei';
+import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader';
+import * as THREE from 'three';
 import './App.css';
 
 //GLB model load
 function Model(props) {
-  const { scene } = useGLTF("/modern_home.glb");
+  //const scene  = useLoader(TDSLoader ,"modern_home.glb");
+  const {scene} = useGLTF("/modern_home.glb");
   return <primitive object={scene} {...props} />;
 }
+
 
 //WASD controls
 function Controls({ controlsRef, moveState }) {
   useFrame(() => {
-    const moveSpeed = 4;
+    const moveSpeed = 2;
     const { current: controls } = controlsRef;
     if (!controls || !controls.isLocked) return;
 
+    const cameraDirection = new THREE.Vector3();
+    controls.getObject().getWorldDirection(cameraDirection);
+
     if (moveState.forward) {
-      controls.moveForward(moveSpeed);
+      cameraDirection.multiplyScalar(moveSpeed);
+      controls.getObject().position.add(cameraDirection);
     }
     if (moveState.backward) {
-      controls.moveForward(-moveSpeed);
+      cameraDirection.multiplyScalar(-moveSpeed);
+      controls.getObject().position.add(cameraDirection);
     }
     if (moveState.left) {
-      controls.moveRight(-moveSpeed);
+        controls.moveRight(-moveSpeed);
     }
     if (moveState.right) {
-      controls.moveRight(moveSpeed);
+        controls.moveRight(moveSpeed);
     }
-    if (moveState.up) {
-      controls.getObject().position.y += moveSpeed * 0.4;
-    }
-    if (moveState.down) {
-      controls.getObject().position.y -= moveSpeed * 0.4;
-    }
+
   });
 
   return null;
@@ -51,8 +55,6 @@ function App() {
     backward: false,
     left: false,
     right: false,
-    up: false,
-    down: false
   });
 
   // wasd func keydown
@@ -69,12 +71,6 @@ function App() {
         break;
       case 'd':
         setMoveState((prevState) => ({ ...prevState, right: true }));
-        break;
-      case 'q':
-        setMoveState((prevState) => ({ ...prevState, up: true }));
-        break;
-      case 'e':
-        setMoveState((prevState) => ({ ...prevState, down: true }));
         break;
       default:
         break;
@@ -95,12 +91,6 @@ function App() {
       case 'd':
         setMoveState((prevState) => ({ ...prevState, right: false }));
         break;
-      case 'q':
-        setMoveState((prevState) => ({ ...prevState, up: false }));
-        break;
-      case 'e':
-        setMoveState((prevState) => ({ ...prevState, down: false }));
-        break;
       default:
         break;
     }
@@ -115,17 +105,21 @@ function App() {
     };
   }, []);
 
-  //Camera look At for snapping to specific postion or angle (Currently at model Position )
-  useEffect(() => {
-    const { current: model } = modelRef;
+ 
+
+  const resetCamera = () => {
     const { current: controls } = controlsRef;
-    if (model && controls) {
-          controls.getObject().lookAt(model.position);
+    if (controls && !controlsRef.current.lock()) {
+      controls.getObject().position.set(0, 0, 180); 
+      controls.getObject().lookAt(0,0,0);
     }
-  }, [modelRef.current]);
+  };
+ 
 
   return (
-    <><Canvas dpr={[1, 2]} camera={{ fov: 75 }} style={{ position: 'absolute' }} onClick={() => controlsRef.current.lock()}>
+    <>
+     <div className='reset' onClick={resetCamera}>Reset</div>
+    <Canvas dpr={[1, 2]} camera={{ fov: 75 }} style={{ position: 'absolute' }} onClick={() => controlsRef.current.lock()}>
       <PointerLockControls ref={controlsRef} />
       <color attach="background" args={['#0000FF']} />
       <Sky sunPosition={[100, 20, 100]} />
@@ -135,7 +129,6 @@ function App() {
       <ambientLight intensity={1.5} />
       <Controls controlsRef={controlsRef} moveState={moveState} />
     </Canvas>
-    <div style={{ zIndex : 10 , background: 'transparent' , position: 'fixed' , color : 'white' , padding : '20px'}}>Submitted By - Shivam Shakya <div style={{ textDecoration : 'underline'}}><br></br> W - move forward <br></br> A - move left <br></br>S - move backword <br></br> D - move right <br></br> Q - move up <br></br>E - move down <br></br></div></div>
     </>
   );
 }
