@@ -1,9 +1,22 @@
-.reset {
+.ui {
     z-index: 10;
     background: transparent;
-    position: fixed;
+    position: absolute;
     color: white;
     padding: 20px;
   }
   
+.border{
+     border: 1px solid white;
+     padding: 2px;
+}
+.range{
+   display: flex;
+   justify-content: center;
+}
+.reset{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
   

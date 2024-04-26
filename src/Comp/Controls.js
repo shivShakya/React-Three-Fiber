@@ -1,14 +1,18 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect, useRef, forwardRef } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 
-const Controls = forwardRef((props, ref) => {
+const Controls = (props ,ref) => {
+  const { camera } = useThree();
+
   const [moveState, setMoveState] = useState({
     forward: false,
     backward: false,
     left: false,
     right: false,
   });
+
+  const controlsRef = useRef(false);
 
   const handleKeyDown = (event) => {
     switch (event.key) {
@@ -28,7 +32,6 @@ const Controls = forwardRef((props, ref) => {
         break;
     }
   };
-
   const handleKeyUp = (event) => {
     switch (event.key) {
       case 'w':
@@ -47,42 +50,72 @@ const Controls = forwardRef((props, ref) => {
         break;
     }
   };
+  const handleMouseMove = (event) => {
+    if (controlsRef.current && camera) {
+      const rotateSpeed = 0.002;
+      const { movementX, movementY } = event;
+      const deltaYaw = -movementX * rotateSpeed;
+     // const deltaPitch = -movementY * rotateSpeed;
+      camera.rotation.y += deltaYaw;
+    }
+  };
 
   useEffect(() => {
+    const handlePointerDown = () => {
+      controlsRef.current = true;
+    };
+    const handlePointerUp = () => {
+      controlsRef.current = false;
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('pointerdown', handlePointerDown);
+     window.addEventListener('pointerup', handlePointerUp);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
     };
   }, []);
 
   useFrame(() => {
     const moveSpeed = props.speed;
-    const controls = ref.current;
-
-    if (!controls || !controls.isLocked) return;
-
+  
     const cameraDirection = new THREE.Vector3();
-    controls.getObject().getWorldDirection(cameraDirection);
-
+    camera.getWorldDirection(cameraDirection);
+    cameraDirection.normalize();
+  
+    const cameraUp = new THREE.Vector3(0, 1, 0);
+    const cameraRight = new THREE.Vector3();
+    cameraRight.crossVectors(cameraDirection, cameraUp);
+    cameraRight.normalize();
+  
+    const originalY = props.height;
+  
     if (moveState.forward) {
       cameraDirection.multiplyScalar(moveSpeed);
-      controls.getObject().position.add(cameraDirection);
+      camera.position.add(cameraDirection);
     }
     if (moveState.backward) {
       cameraDirection.multiplyScalar(-moveSpeed);
-      controls.getObject().position.add(cameraDirection);
+      camera.position.add(cameraDirection);
     }
     if (moveState.left) {
-      controls.moveRight(-moveSpeed);
+      camera.position.addScaledVector(cameraRight, -moveSpeed);
     }
     if (moveState.right) {
-      controls.moveRight(moveSpeed);
+      camera.position.addScaledVector(cameraRight, moveSpeed);
     }
+  
+    camera.position.y = originalY;
   });
+  
 
   return null;
-});
+};
 
 export default Controls;
