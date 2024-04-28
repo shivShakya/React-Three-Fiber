@@ -3,7 +3,8 @@ import { useLoader } from '@react-three/fiber';
 import { BoxHelper } from 'three';
 
 const Model = forwardRef((props, ref) => {
-    const gltf = useLoader(props.loader, props.link);
+    const  gltf = useLoader(props.loader, props.link);
+    console.log({gltf});
     const [hoveredObject, setHoveredObject] = useState(null);
     const [selectedObjects, setSelectedObjects] = useState(new Set());
     const [store, setStore] = useState([]);
@@ -59,7 +60,7 @@ const Model = forwardRef((props, ref) => {
 
     useMemo(() => {
         const helpersArray = [];
-        gltf.scene.traverse((child) => {
+        gltf.traverse((child) => {
             if (child.isMesh) {
                 const helper = new BoxHelper(child, 0xffff00);
                 child.userData.helper = helper;
@@ -68,12 +69,12 @@ const Model = forwardRef((props, ref) => {
         });
         setStore(helpersArray);
         meshRefs.current = helpersArray;
-    }, [gltf.scene]);
+    }, [gltf]);
 
     return (
         <>
             <primitive
-                object={gltf.scene}
+                object={gltf}
                 onPointerOver={handleHover}
                 onPointerOut={handlePointerOut}
                 onClick={handleClick}
@@ -82,7 +83,7 @@ const Model = forwardRef((props, ref) => {
             />
             {meshRefs.current.map(({ id, visible, clicked }) => (
                       ((hoveredObject && hoveredObject.uuid === id) || selectedObjects.has(id)) && (
-                              <primitive key={id} object={gltf.scene.getObjectByProperty('uuid', id).userData.helper} />
+                              <primitive key={id} object={gltf.getObjectByProperty('uuid', id).userData.helper} />
               )
             ))}
 
