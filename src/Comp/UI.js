@@ -10,7 +10,7 @@ const UI = React.memo((props) => {
         if (camera.name === props.cameraId) {
             // Reset camera position to initial position
             camera.position.set(props.initialPos[0], props.initialPos[1], props.initialPos[2]);
-             camera.lookAt(props.modelPos);
+             camera.lookAt(props.modelPos[0], props.modelPos[1], props.modelPos[2]);
         }
     };
     
@@ -22,12 +22,12 @@ const UI = React.memo((props) => {
     };
 
     return (
-        <Html className='ui' position={[0, !props.enabled ? 100 : 0 ,0]}>
+        <Html className='ui' position={[0, !props.enabled ? -500 : 0 ,0]}>
             {
                   props.enabled ? <div>
                           <div className="border range" style={{ fontSize: '15px' }}><input type="range" style={{ accentColor: 'blueviolet' }} min={0} max={50} value={props.speed} step={0.1} onChange={(e) => props.setSpeed(e.target.value)} /> {props.speed}  </div>
                          <div onClick={resetCamera} className="border reset">Reset</div> 
-                  </div> :   <div className="border reset"><input type="checkbox"  placeholder="visibility" checked={props.visibility} onChange={handleVisibilityChange} /> visible</div>
+                  </div> :   <><div className="border reset"><input type="checkbox" placeholder="visibility" checked={props.visibility} onChange={handleVisibilityChange} /> visible</div><div onClick={resetCamera} className="border reset">Reset</div></> 
              }  
         </Html>
     );

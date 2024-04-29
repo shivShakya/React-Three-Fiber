@@ -19,10 +19,10 @@ function Panel(props){
                <Canvas
                     dpr={[1, 2]}
                     camera={{ position: props.initialPos, fov: 75 , name : props.id }}
-                    style={{  height: '100%', width : '50%' }}
+                    style={{  height: '50%', width : '100%' }}
                     ref={cameraRef}
                >
-                  <UI cameraId={props.id} visibility={visibility} enabled={props.enabled} initialPos={props.initialPos} setVisibility={setVisibility} setSpeed={setSpeed} modelPos={[0,0,0]} speed={parseFloat(speed)}/>
+                  <UI cameraId={props.id} visibility={visibility} enabled={props.enabled} initialPos={props.initialPos} setVisibility={setVisibility} setSpeed={setSpeed} modelPos={props.modelPos} speed={parseFloat(speed)}/>
                   <color attach="background" args={[props.color]} />
                   <Stage environment={null}>
                       <Model
