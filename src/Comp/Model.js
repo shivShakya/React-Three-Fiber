@@ -1,10 +1,9 @@
 import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { BoxHelper } from 'three';
-import * as THREE from 'three';
 
 const Model = forwardRef((props, ref) => {
-    const { scene } = useThree();
+    const { scene  } = useThree();
     const model = useLoader(props.loader, props.link);
     const [selectedObject, setSelectedObject] = useState(null);
     const [store, setStore] = useState([]);
@@ -70,6 +69,7 @@ const Model = forwardRef((props, ref) => {
             )
         );
     };
+
     useEffect(() => {
         meshRefs.current.forEach((child) => {
             const helper = helperRefs.current.get(child);
@@ -78,12 +78,12 @@ const Model = forwardRef((props, ref) => {
                 if (storeItem) {
                     helper.material.color.set(storeItem.clicked ? "#ff0000" : "#000000");
                 }
+               if(!props.enabled){
                 helper.visible = storeItem && (selectedObject === child || (storeItem.clicked && storeItem.id === child.uuid) || !storeItem.visible);
+               }
             }
         });
     }, [selectedObject, store]);
-    
-    
 
     return (
         <primitive
@@ -91,7 +91,8 @@ const Model = forwardRef((props, ref) => {
             onPointerOver={handleHover}
             onPointerOut={handlePointerOut}
             onClick={(e) => handleClick(e)}
-            rotation={[Math.PI / 2, 0, 0]}
+            rotation={props.rotation}
+            position={props.modelPos}
             ref={ref}
             {...props}
         />

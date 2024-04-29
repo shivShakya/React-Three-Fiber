@@ -1,52 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Stage } from '@react-three/drei';
-import Model from './Model';
-import UI from './UI';
-import Controls from './Controls';
-import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader';
+import Panel from './Panel';
+
 import * as THREE from 'three';
 import './Scene.css';
 
 function Scene(props) {
-  const cameraRef = useRef();
-  const modelRef = useRef();
-  const [speed, setSpeed] = useState(5);
-  const [height, setHeight] = useState(-20);
-  const [visibility, setVisibility] = useState(true);
-
-  const initialPos = new THREE.Vector3(0, 0, 30);
-  const modelPos = new THREE.Vector3(0, 0, 0);
 
   return (
-    <div>
-      <Canvas
-        dpr={[1, 2]}
-        camera={{ position: initialPos, fov: 75 }}
-        style={{ position: 'absolute' }}
-        ref={cameraRef}
-      >
-        <UI
-          initialPos={initialPos}
-          modelPos={modelPos}
-          speed={speed}
-          setSpeed={setSpeed}
-          visibility={visibility}
-          setVisibility={setVisibility}
-        />
-        <color attach="background" args={['gray']} />
-        <Stage environment={null}>
-          <Model
-            ref={modelRef}
-            loader={TDSLoader}
-            visibility={visibility}
-            link={'/model2.3ds'}
-          />
-        </Stage>
-        <Controls speed={speed} height={height} />
-        <ambientLight intensity={1.5} />
-      </Canvas>
-    </div>
+    <div style={{ display: 'flex', width: '100%', height: '100vh' }}>     
+               <Panel id={1}  color={'green'} enabled={false} height={300}  modelPath={'/model2.3ds'} initialPos={[0,100,100]} modelPos={[0,0,0]} rotation={[Math.PI / 2, 0, 0]}/>
+               <Panel id={2} color={'gray'} enabled={true} height={-20} modelPath={'/model1.3ds'} initialPos={[0,0,100]} modelPos={[0,0,0]} rotation={[Math.PI / 2, 0, 0]}/>
+    </div> 
   );
 }
 

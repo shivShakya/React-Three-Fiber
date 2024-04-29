@@ -7,9 +7,13 @@ const UI = React.memo((props) => {
     const { camera } = useThree();
 
     const resetCamera = () => {
-        camera.position.copy(props.initialPos);
-        camera.lookAt(props.modelPos);
+        if (camera.name === props.cameraId) {
+            // Reset camera position to initial position
+            camera.position.set(props.initialPos[0], props.initialPos[1], props.initialPos[2]);
+             camera.lookAt(props.modelPos);
+        }
     };
+    
 
     const handleVisibilityChange = (e) => {
         const visibility = e.target.checked;
@@ -18,10 +22,13 @@ const UI = React.memo((props) => {
     };
 
     return (
-        <Html className='ui' position={new THREE.Vector3(0,0,0)}>
-            <div className="border range" style={{ fontSize: '15px' }}><input type="range" style={{ accentColor: 'blueviolet' }} min={0} max={50} value={props.speed} step={0.1} onChange={(e) => props.setSpeed(e.target.value)} /> {props.speed}  </div>
-            <div className="border reset"><input type="checkbox"  placeholder="visibility" checked={props.visibility} onChange={handleVisibilityChange} /> visible</div>
-            <div onClick={resetCamera} className="border reset">Reset</div>
+        <Html className='ui' position={[0, !props.enabled ? 100 : 0 ,0]}>
+            {
+                  props.enabled ? <div>
+                          <div className="border range" style={{ fontSize: '15px' }}><input type="range" style={{ accentColor: 'blueviolet' }} min={0} max={50} value={props.speed} step={0.1} onChange={(e) => props.setSpeed(e.target.value)} /> {props.speed}  </div>
+                         <div onClick={resetCamera} className="border reset">Reset</div> 
+                  </div> :   <div className="border reset"><input type="checkbox"  placeholder="visibility" checked={props.visibility} onChange={handleVisibilityChange} /> visible</div>
+             }  
         </Html>
     );
 });

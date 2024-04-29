@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef, forwardRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 
-const Controls = (props ,ref) => {
-  const { camera } = useThree();
+const Controls = (props) => {
+  const { camera , viewport } = useThree();
+  console.log({viewport});
 
   const [moveState, setMoveState] = useState({
     forward: false,
@@ -51,7 +52,7 @@ const Controls = (props ,ref) => {
     }
   };
   const handleMouseMove = (event) => {
-    if (controlsRef.current && camera) {
+    if (controlsRef.current && camera && props.enabled) {
       const rotateSpeed = 0.002;
       const { movementX, movementY } = event;
       const deltaYaw = -movementX * rotateSpeed;
@@ -80,11 +81,11 @@ const Controls = (props ,ref) => {
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, []);
+  }, [controlsRef.current]);
 
   useFrame(() => {
+   if(props.enabled){
     const moveSpeed = props.speed;
-  
     const cameraDirection = new THREE.Vector3();
     camera.getWorldDirection(cameraDirection);
     cameraDirection.normalize();
@@ -94,26 +95,23 @@ const Controls = (props ,ref) => {
     cameraRight.crossVectors(cameraDirection, cameraUp);
     cameraRight.normalize();
   
-
-    if (moveState.forward) {
-      cameraDirection.multiplyScalar(moveSpeed);
-      camera.position.add(cameraDirection);
-    }
-    if (moveState.backward) {
-      cameraDirection.multiplyScalar(-moveSpeed);
-      camera.position.add(cameraDirection);
-    }
-    if (moveState.left) {
-      camera.position.addScaledVector(cameraRight, -moveSpeed);
-    }
-    if (moveState.right) {
-      camera.position.addScaledVector(cameraRight, moveSpeed);
-    }
-  
-    camera.position.y = props.height;
-  });
-  
-
+      if (moveState.forward) {
+        cameraDirection.multiplyScalar(moveSpeed);
+        camera.position.add(cameraDirection);
+      }
+      if (moveState.backward) {
+        cameraDirection.multiplyScalar(-moveSpeed);
+        camera.position.add(cameraDirection);
+      }
+      if (moveState.left) {
+        camera.position.addScaledVector(cameraRight, -moveSpeed);
+      }
+      if (moveState.right) {
+        camera.position.addScaledVector(cameraRight, moveSpeed);
+      } 
+   }
+   camera.position.y = props.height;
+  },[camera.position]);
   return null;
 };
 
