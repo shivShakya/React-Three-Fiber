@@ -94,8 +94,7 @@ const Controls = (props ,ref) => {
     cameraRight.crossVectors(cameraDirection, cameraUp);
     cameraRight.normalize();
   
-    const originalY = props.height;
-  
+
     if (moveState.forward) {
       cameraDirection.multiplyScalar(moveSpeed);
       camera.position.add(cameraDirection);
@@ -111,7 +110,7 @@ const Controls = (props ,ref) => {
       camera.position.addScaledVector(cameraRight, moveSpeed);
     }
   
-    camera.position.y = originalY;
+    camera.position.y = props.height;
   });
   
 
