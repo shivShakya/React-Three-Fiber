@@ -4,7 +4,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 
 const Controls = (props) => {
   const { camera , viewport } = useThree();
-  console.log({viewport});
 
   const [moveState, setMoveState] = useState({
     forward: false,

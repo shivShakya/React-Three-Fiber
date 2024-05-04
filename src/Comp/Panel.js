@@ -5,7 +5,6 @@ import Model from './Model';
 import UI from './UI';
 import Controls from './Controls';
 import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader';
-import * as THREE from 'three';
 import './Scene.css';
 
 

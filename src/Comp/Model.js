@@ -3,7 +3,7 @@ import { useLoader, useThree } from '@react-three/fiber';
 import { BoxHelper } from 'three';
 
 const Model = forwardRef((props, ref) => {
-    const { scene  } = useThree();
+    const { scene } = useThree();
     const model = useLoader(props.loader, props.link);
     const [selectedObject, setSelectedObject] = useState(null);
     const [store, setStore] = useState([]);
@@ -25,6 +25,10 @@ const Model = forwardRef((props, ref) => {
         const meshArr = [];
         model.traverse((child) => {
             if (child.isMesh) {
+
+                if(child.name === 'Group1'){
+                        child.visible = false;
+                }
                 const helper = new BoxHelper(child, 0x000000, 2);
                 helper.visible = false;
                 helperRefs.current.set(child, helper);
@@ -43,11 +47,13 @@ const Model = forwardRef((props, ref) => {
             helperRefs.current.clear();
         };
     }, [model, scene]);
+    
 
     useEffect(() => {
         if (recent.current && recent.current.visible !== undefined) {
             if (!props.visibility) {
                 recent.current.visible = false;
+                
                 setStore((prevStore) => prevStore.map((item) => 
                     item.id === recent.current.uuid ? { ...item, visible: false, clicked: true } : item
                 ));
@@ -78,9 +84,10 @@ const Model = forwardRef((props, ref) => {
                 if (storeItem) {
                     helper.material.color.set(storeItem.clicked ? "#ff0000" : "#000000");
                 }
-               if(!props.enabled){
-                helper.visible = storeItem && (selectedObject === child || (storeItem.clicked && storeItem.id === child.uuid) || !storeItem.visible);
+               if (!props.enabled) {
+                    helper.visible = storeItem && (selectedObject === child || (storeItem.clicked && storeItem.id === child.uuid) || !storeItem.visible);
                }
+               
             }
         });
     }, [selectedObject, store]);
