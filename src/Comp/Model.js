@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
-import { BoxHelper } from 'three';
+import { BoxHelper, Vector3, BoxGeometry, MeshBasicMaterial, Mesh, Raycaster, ArrowHelper } from 'three';
 
 const Model = forwardRef((props, ref) => {
     const { scene } = useThree();
@@ -23,12 +23,34 @@ const Model = forwardRef((props, ref) => {
     useEffect(() => {
         const newHelpers = [];
         const meshArr = [];
+
+            const raycaster = new Raycaster();
+            const coords = new Vector3(0, 200, 0);
+            raycaster.set(model.position.clone().add(coords), new Vector3(0, -1, 0));
+            var intersects = raycaster.intersectObject(model);
+            console.log({ ['intersects' + props.link]: intersects });
+    
+                intersects.forEach((intersection) => {
+                    const { object: mesh, face } = intersection;
+                    if (face) {
+                        mesh.visible = false;
+                       
+                    }
+                });
+    
+                const arrowHelper = new ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 100, 0x00ff00);
+                scene.add(arrowHelper);
+    
+                const boxGeometry = new BoxGeometry(10, 10, 10);
+                const boxMaterial = new MeshBasicMaterial({ color: 0xffff00 });
+                const boxMesh = new Mesh(boxGeometry, boxMaterial);
+                boxMesh.position.copy(coords);
+                scene.add(boxMesh);
+    
+       
+        
         model.traverse((child) => {
             if (child.isMesh) {
-
-                if(child.name === 'Group1'){
-                        child.visible = false;
-                }
                 const helper = new BoxHelper(child, 0x000000, 2);
                 helper.visible = false;
                 helperRefs.current.set(child, helper);
@@ -47,28 +69,10 @@ const Model = forwardRef((props, ref) => {
             helperRefs.current.clear();
         };
     }, [model, scene]);
-    
-
-    useEffect(() => {
-        if (recent.current && recent.current.visible !== undefined) {
-            if (!props.visibility) {
-                recent.current.visible = false;
-                
-                setStore((prevStore) => prevStore.map((item) => 
-                    item.id === recent.current.uuid ? { ...item, visible: false, clicked: true } : item
-                ));
-            } else {
-                recent.current.visible = true;
-                setStore((prevStore) => prevStore.map((item) => 
-                    item.id === recent.current.uuid ? { ...item, visible: true, clicked: true } : item
-                ));
-            }
-        }
-    }, [props.visibility]);
 
     const handleClick = (e) => {
         recent.current = e.object;
-        const meshId =  e.object.uuid;
+        const meshId = e.object.uuid;
         setStore((prevStore) =>
             prevStore.map((item) =>
                 item.id === meshId ? { ...item, clicked: !item.clicked, visible: recent.current === meshId ? !item.visible : item.visible } : item
@@ -84,13 +88,9 @@ const Model = forwardRef((props, ref) => {
                 if (storeItem) {
                     helper.material.color.set(storeItem.clicked ? "#ff0000" : "#000000");
                 }
-               if (!props.enabled) {
-                    helper.visible = storeItem && (selectedObject === child || (storeItem.clicked && storeItem.id === child.uuid) || !storeItem.visible);
-               }
-               
             }
         });
-    }, [selectedObject, store]);
+    }, [store]);
 
     return (
         <primitive
