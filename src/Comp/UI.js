@@ -27,6 +27,7 @@ const UI = React.memo((props) => {
                   props.enabled ? <div>
                           <div className="border range" style={{ fontSize: '15px' }}><input type="range" style={{ accentColor: 'blueviolet' }} min={0} max={50} value={props.speed} step={0.1} onChange={(e) => props.setSpeed(e.target.value)} /> {props.speed}  </div>
                          <div onClick={resetCamera} className="border reset">Reset</div> 
+                         <div className="border reset">Light mode <input type="checkbox" checked={props.lightMode} onChange={(e)=>{props.setLightMode(e.target.checked)}} /></div>
                   </div> :   <><div className="border reset"><input type="checkbox" placeholder="visibility" checked={props.visibility} onChange={handleVisibilityChange} /> visible</div><div onClick={resetCamera} className="border reset">Reset</div></> 
              }  
         </Html>
