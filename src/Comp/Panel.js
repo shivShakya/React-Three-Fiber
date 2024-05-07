@@ -22,7 +22,10 @@ function Panel(props){
                     style={{  height: '100%', width : '100%' }}
                     ref={cameraRef}
                >
-                    <Lights  setEnabled={props.setEnabled} lightMode={props.lightMode} setLightMode={props.setLightMode}/>
+                    <Lights  setEnabled={props.setEnabled} lightMode={props.lightMode} setLightMode={props.setLightMode} position={[0,40,0]}/>
+                    <Lights  setEnabled={props.setEnabled} lightMode={props.lightMode} setLightMode={props.setLightMode} position={[50,60,100]}/>
+                    <Lights  setEnabled={props.setEnabled} lightMode={props.lightMode} setLightMode={props.setLightMode} position={[100,20,200]}/>
+                    <Lights  setEnabled={props.setEnabled} lightMode={props.lightMode} setLightMode={props.setLightMode} position={[40,0,300]}/>
                   <UI cameraId={props.id} visibility={visibility} enabled={props.enabled} initialPos={props.initialPos} setVisibility={setVisibility} setSpeed={setSpeed} modelPos={props.modelPos} speed={parseFloat(speed)} lightMode={props.lightMode} setLightMode={props.setLightMode}/>
                   <color attach="background" args={[props.color]} />
                   <Stage environment={null}>

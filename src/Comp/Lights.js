@@ -1,58 +1,42 @@
 import React, { useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { useHelper, PivotControls } from '@react-three/drei';
-import { PointLightHelper, Mesh } from 'three'; 
+import { PointLightHelper } from 'three'; 
 
 function Lights(props) {
-  const [showPivot, setShowPivot] = useState(false);
   const pointLight = useRef();
-  const pivotMesh = useRef();
   const pivotControls = useRef();
+  const group = useRef();
 
- const helper =  useHelper(pointLight, PointLightHelper);
- console.log({helper});
-
-  const togglePivot = () => {
-    setShowPivot(prevState => !prevState); 
-  };
-
-  const handleClick = (event) => {
-    event.stopPropagation();
-    togglePivot();
-  };
-
+  useHelper(pointLight, PointLightHelper);
+  const pivotPosition = [props.position[0], props.position[1], props.position[2]];
 
   return (
     <>
-      {props.lightMode && showPivot && (
-        <PivotControls
-          ref={pivotControls}
-          position={[0, 0, 0]}
-          scale={10}
-          onClick={() => togglePivot()}
-          onDragStart={() => props.setEnabled(false)}
-          onDragEnd={() => props.setEnabled(true)}
-        >
-          <pointLight
-            ref={pointLight}
-            intensity={2000}
+      {props.lightMode && (
+        <group ref={group} position={props.position}>
+          <PivotControls
+            ref={pivotControls}
             position={[0, 0, 0]} 
-            distance={2000} 
-            decay={2} 
-          />
-        </PivotControls>
+            scale={10}
+            onDragStart={() => props.setEnabled(false)}
+            onDragEnd={() => props.setEnabled(true)}
+          >
+            <pointLight
+              ref={pointLight}
+              intensity={2000}
+              position={[0, 0, 0]} 
+              distance={2000} 
+              decay={2} 
+            />
+            <mesh position={[0, 0, 0]}> 
+              <sphereGeometry args={[6, 6, 6]} />
+              <meshBasicMaterial visible={true} />
+            </mesh>
+          </PivotControls>
+        </group>
       )}
-
-      <mesh
-        ref={pivotMesh}
-        onClick={handleClick}
-      >
-        <sphereGeometry args={[6, 6, 6]} />
-        <meshBasicMaterial visible={true} />
-      </mesh>
     </>
   );
 }
 
 export default Lights;
-
