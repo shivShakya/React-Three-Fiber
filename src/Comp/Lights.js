@@ -1,14 +1,9 @@
-import React, { useRef, useState } from 'react';
-import { useHelper, PivotControls } from '@react-three/drei';
-import { PointLightHelper } from 'three'; 
+import React, { useRef } from 'react';
+import { PivotControls } from '@react-three/drei';
 
 function Lights(props) {
-  const pointLight = useRef();
   const pivotControls = useRef();
   const group = useRef();
-
-  useHelper(pointLight, PointLightHelper);
-  const pivotPosition = [props.position[0], props.position[1], props.position[2]];
 
   return (
     <>
@@ -21,13 +16,7 @@ function Lights(props) {
             onDragStart={() => props.setEnabled(false)}
             onDragEnd={() => props.setEnabled(true)}
           >
-            <pointLight
-              ref={pointLight}
-              intensity={2000}
-              position={[0, 0, 0]} 
-              distance={2000} 
-              decay={2} 
-            />
+           {props.lightType}
             <mesh position={[0, 0, 0]}> 
               <sphereGeometry args={[6, 6, 6]} />
               <meshBasicMaterial visible={true} />

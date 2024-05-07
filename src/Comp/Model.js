@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { useLoader, useThree  , useFrame} from '@react-three/fiber';
-import { Vector3, BoxGeometry, Mesh, Raycaster, BoxHelper, ArrowHelper, SphereGeometry, MeshBasicMaterial, LineBasicMaterial, BufferGeometry, Line } from 'three';
+import { Vector3, BoxGeometry, Mesh, Raycaster, BoxHelper, ArrowHelper, SphereGeometry, MeshBasicMaterial, LineBasicMaterial, BufferGeometry, Line , TextureLoader, RepeatWrapping , DoubleSide,Color } from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import * as TWEEN from '@tweenjs/tween.js';
@@ -12,6 +12,7 @@ const Model = forwardRef((props, ref) => {
   const [store, setStore] = useState([]);
   const [clickCounter, setClickCounter] = useState(0);
   const fontLoader = new FontLoader();
+  const texture = useLoader(TextureLoader, 'wallBrick.jpg');
 
   const meshRefs = useRef([]);
   const helperRefs = useRef(new Map());
@@ -34,7 +35,7 @@ const Model = forwardRef((props, ref) => {
       intersects.forEach((intersection) => {
         const { object: mesh, face } = intersection;
         if (face) {
-          mesh.visible = false;
+         // mesh.visible = false;
         }
       });
 
@@ -61,6 +62,22 @@ const Model = forwardRef((props, ref) => {
     };
   }, [model, scene, camera]);
 
+  useEffect(() => {
+    if (model) {
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.receiveShadow = true;
+          child.castShadow = true;
+          child.material.map = texture;
+          texture.wrapS = texture.wrapT = RepeatWrapping;
+          texture.repeat.set(0.009, 0.009);
+          child.material.flatShading = true;
+          child.material.side = DoubleSide; 
+        }
+      });
+    }
+  }, [model]);
+  
 
   const handleClick = (e) => {
     if (e.shiftKey) {
@@ -151,8 +168,6 @@ const Model = forwardRef((props, ref) => {
     .start();
      }
 
-  
-
       recent.current = e.object;
       const meshId = e.object.uuid;
       setStore((prevStore) =>
@@ -191,6 +206,7 @@ const Model = forwardRef((props, ref) => {
         ref={ref}
         {...props}
       />
+      <directionalLight intensity={0.6} position={[0,200, 0]} />
     </>
   );
 });
